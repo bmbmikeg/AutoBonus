@@ -1,7 +1,10 @@
 const { chromium } = require('playwright');
 
 (async () => {
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({
+     headless: false,
+     executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+     });
   const context = await browser.newContext();
   const page = await context.newPage();
 
@@ -18,8 +21,7 @@ const { chromium } = require('playwright');
       if (message.t === 'GameState') {
         console.log('Game State Data:', message.gameState);
         // Further processing here
-      }
-    });
+      }    });
 
     // Listen for outgoing WebSocket messages (if needed)
     webSocket.on('framesent', (frame) => {
@@ -29,9 +31,9 @@ const { chromium } = require('playwright');
   });
 
   // Navigate to the poker platform
-  await page.goto('https://example-poker-platform.com'); // Replace with the actual URL
+  await page.goto('https://stake.us'); // Replace with the actual URL
 
   // Keep the browser open to capture messages
   await page.waitForTimeout(60000); // Adjust as needed
-  await browser.close();
+ // await browser.close();
 })();
