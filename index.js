@@ -4,8 +4,13 @@ chromium.use(stealth)
 ;(async () => {
   const browser = await chromium.launch({
      headless: false,
-     executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-     });
+     executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+     args: [
+    '--start-maximized',
+    '--disable-dev-shm-usage',
+    '--no-sandbox'
+  ],
+  });
   const context = await browser.newContext();
   const page = await context.newPage();
 
