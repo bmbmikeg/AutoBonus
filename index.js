@@ -1,40 +1,22 @@
-const { chromium } = require('playwright-extra');
+// playwright-extra is a drop-in replacement for playwright,
+// it augments the installed playwright with plugin functionality
+const { chromium } = require('playwright-extra')
+
+// Load the stealth plugin and use defaults (all tricks to hide playwright usage)
+// Note: playwright-extra is compatible with most puppeteer-extra plugins
 const stealth = require('puppeteer-extra-plugin-stealth')()
+
+// Add the plugin to playwright (any number of plugins can be added)
 chromium.use(stealth)
-(async () => {
-  const browser = await chromium.launch({
-     headless: false,
-     executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-     });
-  const context = await browser.newContext();
-  const page = await context.newPage();
 
-  // Intercept WebSocket connections
-  page.on('websocket', (webSocket) => {
-    console.log('WebSocket opened:', webSocket.url());
+// That's it, the rest is playwright usage as normal 😊
+chromium.launch({ headless: true }).then(async browser => {
+  const page = await browser.newPage()
 
-    // Listen for incoming WebSocket messages
-    webSocket.on('framereceived', (frame) => {
-      const message = JSON.parse(frame.payload); // Parse the incoming JSON message
-      console.log('WebSocket Message Received:', message);
+  console.log('Testing the stealth plugin..')
+  await page.goto('https://bot.sannysoft.com', { waitUntil: 'networkidle' })
+  await page.screenshot({ path: 'stealth.png', fullPage: true })
 
-      // Process game data
-      if (message.t === 'GameState') {
-        console.log('Game State Data:', message.gameState);
-        // Further processing here
-      }    });
-
-    // Listen for outgoing WebSocket messages (if needed)
-    webSocket.on('framesent', (frame) => {
-      const message = JSON.parse(frame.payload); // Parse outgoing messages
-      console.log('WebSocket Message Sent:', message);
-    });
-  });
-
-  // Navigate to the poker platform
-  await page.goto('https://stake.us'); // Replace with the actual URL
-
-  // Keep the browser open to capture messages
-  await page.waitForTimeout(60000); // Adjust as needed
- // await browser.close();
-})();
+  console.log('All done, check the screenshot. ✨')
+  await browser.close()
+})
